@@ -1,17 +1,18 @@
 {
   "name": "upload-release-action",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "private": true,
   "description": "Upload files to a GitHub release",
   "main": "lib/main.js",
   "scripts": {
+    "watch": "tsc --watch",
     "build": "tsc",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "pack": "ncc build",
+    "dist": "ncc build",
     "test": "jest",
-    "all": "npm run build && npm run format && npm run lint && npm run pack && npm test"
+    "all": "yarn build && yarn format && yarn lint && yarn dist && yarn test"
   },
   "repository": {
     "type": "git",
@@ -24,27 +25,27 @@
     "assets",
     "asset"
   ],
-  "author": "Sven-Hendrik Haase",
+  "author": "Termux Maintainers",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0",
-    "@types/glob": "^7.1.2",
-    "glob": "^7.1.6"
+    "@actions/core": "^1.7.0",
+    "@actions/github": "^5.0.1",
+    "@types/glob": "^7.2.0",
+    "glob": "^8.0.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.64",
-    "@typescript-eslint/parser": "^3.5.0",
-    "@zeit/ncc": "^0.22.3",
-    "eslint": "^7.10.0",
-    "eslint-plugin-github": "^4.0.1",
-    "eslint-plugin-jest": "^23.17.1",
-    "jest": "^26.5.2",
-    "jest-circus": "^26.5.2",
-    "js-yaml": "^3.14.0",
-    "prettier": "^2.0.5",
-    "ts-jest": "^26.4.1",
-    "typescript": "^3.9.6"
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.29",
+    "@typescript-eslint/parser": "^5.21.0",
+    "@vercel/ncc": "^0.33.4",
+    "eslint": "^8.14.0",
+    "eslint-plugin-github": "^4.3.6",
+    "eslint-plugin-jest": "^26.1.5",
+    "jest": "^28.0.1",
+    "jest-circus": "^28.0.1",
+    "js-yaml": "^4.1.0",
+    "prettier": "^2.6.2",
+    "ts-jest": "^27.1.4",
+    "typescript": "^4.6.3"
   }
 }

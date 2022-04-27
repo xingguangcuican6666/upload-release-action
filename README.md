@@ -1,4 +1,4 @@
-# Upload files to a GitHub release [![GitHub Actions Workflow](https://github.com/svenstaro/upload-release-action/workflows/PR%20Checks/badge.svg)](https://github.com/svenstaro/upload-release-action/actions)
+# Upload files to a GitHub release [![GitHub Actions Workflow](https://github.com/termux/upload-release-action/workflows/PR%20Checks/badge.svg)](https://github.com/termux/upload-release-action/actions)
 
 This action allows you to select which files to upload to the just-tagged release.
 It runs on all operating systems types offered by GitHub.
@@ -47,11 +47,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build
       run: cargo build --release
     - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
+      uses: termux/upload-release-action@v3
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/mything
@@ -89,11 +89,11 @@ jobs:
             asset_name: mything-macos-amd64
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build
       run: cargo build --release --locked
     - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
+      uses: termux/upload-release-action@v3
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/${{ matrix.artifact_name }}
@@ -115,11 +115,11 @@ jobs:
     name: Publish binaries
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build
       run: cargo build --release
     - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
+      uses: termux/upload-release-action@v3
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/my*
@@ -144,11 +144,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build
       run: cargo build --release
     - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
+      uses: termux/upload-release-action@v3
       with:
         repo_name: owner/repository-name
         # A personal access token for the GitHub repository in which the release will be created and edited.
@@ -182,7 +182,7 @@ jobs:
     runs-on: ubuntu-latest
          
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # This step reads a file from repo and use it for body of the release
       # This works on any self-hosted runner OS
@@ -197,7 +197,7 @@ jobs:
           echo "::set-output name=RELEASE_BODY::$r"         # <--- Set environment variable
 
       - name: Upload Binaries to Release
-        uses: svenstaro/upload-release-action@v2
+        uses: termux/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
@@ -217,4 +217,16 @@ To release this Action:
 - `git commit -am <version>`
 - `git tag -sm <version> <version>`
 - `git push --follow-tags`
-- Go to https://github.com/svenstaro/upload-release-action/releases and publish the new version
+- Go to https://github.com/termux/upload-release-action/releases and publish the new version
+
+# Credits
+
+Original author of the project: [@svenstaro](https://github.com/svenstaro)
+
+## Why creating this fork
+
+- Upstream still used Node.js 12 which is now EOL.
+- Various dependencies were highly outdated in upstream.
+- I mostly see dep updates in git history without much changes at all to other parts of source code.
+- I don't see upstream fixing this anytime soon.
+- It's always better if all the CI actions' sharable jobs are in the control of organisation members. This helps in assuring that no malicious code is injected on the CI.

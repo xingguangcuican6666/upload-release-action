@@ -71,7 +71,7 @@ function upload_to_release(release, file, asset_name, tag, overwrite, octokit) {
             return;
         }
         const file_size = stat.size;
-        const file_bytes = (0, fs_1.readFileSync)(file).toString();
+        const file_bytes = (0, fs_1.readFileSync)(file, 'binary');
         // Check for duplicates.
         const assets = yield octokit.paginate(octokit.rest.repos.listReleaseAssets, Object.assign(Object.assign({}, repo()), { release_id: release.data.id }));
         const duplicate_asset = assets.find(a => a.name === asset_name);

@@ -1,4 +1,4 @@
-name: 'Upload files to a GitHub release'
+name: "Upload files to a GitHub release (Termux's fork)"
 description: 'Upload files to a GitHub release (cross-platform)'
 author: 'Termux Maintainers'
 branding:

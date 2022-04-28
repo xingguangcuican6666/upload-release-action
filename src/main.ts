@@ -61,7 +61,8 @@ async function upload_to_release(
     core.debug(`Skipping ${file}, since its not a file`);
     return;
   }
-  const file_bytes = readFileSync(file, 'binary');
+  const file_size = stat.size;
+  const file_bytes = readFileSync(file);
 
   // Check for duplicates.
   const assets: RepoAssetsResp = await octokit.paginate(
@@ -96,8 +97,12 @@ async function upload_to_release(
     await octokit.rest.repos.uploadReleaseAsset({
       ...repo(),
       name: asset_name,
-      data: file_bytes,
-      release_id: release.data.id
+      data: file_bytes as unknown as string,
+      release_id: release.data.id,
+      headers: {
+        'content-type': 'binary/octet-stream',
+        'content-length': file_size
+      }
     });
   return uploaded_asset.data.browser_download_url;
 }

@@ -1,6 +1,128 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 2749:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const getRepo_1 = __importDefault(__nccwpck_require__(9859));
+function getReleaseByTag(tag, prerelease, release_name, body, octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            core.debug(`Getting release by tag ${tag}.`);
+            return yield octokit.rest.repos.getReleaseByTag(Object.assign(Object.assign({}, (0, getRepo_1.default)()), { tag: tag }));
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }
+        catch (error) {
+            // If this returns 404, we need to create the release first.
+            if (error.status === 404) {
+                core.debug(`Release for tag ${tag} doesn't exist yet so we'll create it now.`);
+                return yield octokit.rest.repos.createRelease(Object.assign(Object.assign({}, (0, getRepo_1.default)()), { tag_name: tag, prerelease: prerelease, name: release_name, body: body }));
+            }
+            else {
+                throw error;
+            }
+        }
+    });
+}
+exports["default"] = getReleaseByTag;
+
+
+/***/ }),
+
+/***/ 9859:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+function repo() {
+    let repo_name = core.getInput('repo_name');
+    // If we're not targeting a foreign repository, we can just return immediately and don't have to do extra work.
+    if (!repo_name) {
+        return github.context.repo;
+    }
+    const owner = repo_name.substring(0, repo_name.indexOf('/'));
+    if (!owner) {
+        throw new Error(`Could not extract 'owner' from 'repo_name': ${repo_name}.`);
+    }
+    repo_name = repo_name.substring(repo_name.indexOf('/') + 1);
+    if (!repo) {
+        throw new Error(`Could not extract 'repo' from 'repo_name': ${repo_name}.`);
+    }
+    return {
+        owner,
+        repo: repo_name
+    };
+}
+exports["default"] = repo;
+
+
+/***/ }),
+
 /***/ 3109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -38,83 +160,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const fs_1 = __nccwpck_require__(7147);
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const path = __importStar(__nccwpck_require__(1017));
 const glob = __importStar(__nccwpck_require__(1957));
-function get_release_by_tag(tag, prerelease, release_name, body, octokit) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            core.debug(`Getting release by tag ${tag}.`);
-            return yield octokit.rest.repos.getReleaseByTag(Object.assign(Object.assign({}, repo()), { tag: tag }));
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        }
-        catch (error) {
-            // If this returns 404, we need to create the release first.
-            if (error.status === 404) {
-                core.debug(`Release for tag ${tag} doesn't exist yet so we'll create it now.`);
-                return yield octokit.rest.repos.createRelease(Object.assign(Object.assign({}, repo()), { tag_name: tag, prerelease: prerelease, name: release_name, body: body }));
-            }
-            else {
-                throw error;
-            }
-        }
-    });
-}
-function upload_to_release(release, file, asset_name, tag, overwrite, octokit) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const stat = (0, fs_1.statSync)(file);
-        if (!stat.isFile()) {
-            core.debug(`Skipping ${file}, since its not a file`);
-            return;
-        }
-        const file_size = stat.size;
-        const file_bytes = (0, fs_1.readFileSync)(file);
-        // Check for duplicates.
-        const assets = yield octokit.paginate(octokit.rest.repos.listReleaseAssets, Object.assign(Object.assign({}, repo()), { release_id: release.data.id }));
-        const duplicate_asset = assets.find(a => a.name === asset_name);
-        if (duplicate_asset !== undefined) {
-            if (overwrite) {
-                core.debug(`An asset called ${asset_name} already exists in release ${tag} so we'll overwrite it.`);
-                yield octokit.rest.repos.deleteReleaseAsset(Object.assign(Object.assign({}, repo()), { asset_id: duplicate_asset.id }));
-            }
-            else {
-                core.setFailed(`An asset called ${asset_name} already exists.`);
-                return duplicate_asset.browser_download_url;
-            }
-        }
-        else {
-            core.debug(`No pre-existing asset called ${asset_name} found in release ${tag}. All good.`);
-        }
-        core.debug(`Uploading ${file} to ${asset_name} in release ${tag}.`);
-        const uploaded_asset = yield octokit.rest.repos.uploadReleaseAsset(Object.assign(Object.assign({}, repo()), { name: asset_name, data: file_bytes, release_id: release.data.id, headers: {
-                'content-type': 'binary/octet-stream',
-                'content-length': file_size
-            } }));
-        return uploaded_asset.data.browser_download_url;
-    });
-}
-function repo() {
-    let repo_name = core.getInput('repo_name');
-    // If we're not targeting a foreign repository, we can just return immediately and don't have to do extra work.
-    if (!repo_name) {
-        return github.context.repo;
-    }
-    const owner = repo_name.substring(0, repo_name.indexOf('/'));
-    if (!owner) {
-        throw new Error(`Could not extract 'owner' from 'repo_name': ${repo_name}.`);
-    }
-    repo_name = repo_name.substring(repo_name.indexOf('/') + 1);
-    if (!repo) {
-        throw new Error(`Could not extract 'repo' from 'repo_name': ${repo_name}.`);
-    }
-    return {
-        owner,
-        repo: repo_name
-    };
-}
+const uploadToRelease_1 = __importDefault(__nccwpck_require__(2126));
+const getReleaseByTag_1 = __importDefault(__nccwpck_require__(2749));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -131,13 +186,13 @@ function run() {
             const release_name = core.getInput('release_name');
             const body = core.getInput('body');
             const octokit = github.getOctokit(token);
-            const release = yield get_release_by_tag(tag, prerelease, release_name, body, octokit);
+            const release = yield (0, getReleaseByTag_1.default)(tag, prerelease, release_name, body, octokit);
             if (file_glob) {
                 const files = glob.sync(file_name);
                 if (files.length > 0) {
                     for (const file of files) {
                         const asset_name = path.basename(file);
-                        const asset_download_url = yield upload_to_release(release, file, asset_name, tag, overwrite, octokit);
+                        const asset_download_url = yield (0, uploadToRelease_1.default)(release, file, asset_name, tag, overwrite, octokit);
                         core.setOutput('browser_download_url', asset_download_url);
                     }
                 }
@@ -149,7 +204,7 @@ function run() {
                 const asset_name = core.getInput('asset_name') !== ''
                     ? core.getInput('asset_name').replace(/\$tag/g, tag)
                     : path.basename(file_name);
-                const asset_download_url = yield upload_to_release(release, file_name, asset_name, tag, overwrite, octokit);
+                const asset_download_url = yield (0, uploadToRelease_1.default)(release, file_name, asset_name, tag, overwrite, octokit);
                 core.setOutput('browser_download_url', asset_download_url);
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -160,6 +215,88 @@ function run() {
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 2126:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const getRepo_1 = __importDefault(__nccwpck_require__(9859));
+const core = __importStar(__nccwpck_require__(2186));
+const fs_1 = __nccwpck_require__(7147);
+function uploadToRelease(release, file, asset_name, tag, overwrite, octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const stat = (0, fs_1.statSync)(file);
+        if (!stat.isFile()) {
+            core.debug(`Skipping ${file}, since its not a file`);
+            return;
+        }
+        const file_size = stat.size;
+        const file_bytes = (0, fs_1.readFileSync)(file);
+        // Check for duplicates.
+        const assets = yield octokit.paginate(octokit.rest.repos.listReleaseAssets, Object.assign(Object.assign({}, (0, getRepo_1.default)()), { release_id: release.data.id }));
+        const duplicate_asset = assets.find(a => a.name === asset_name);
+        if (duplicate_asset !== undefined) {
+            if (overwrite) {
+                core.debug(`An asset called ${asset_name} already exists in release ${tag} so we'll overwrite it.`);
+                yield octokit.rest.repos.deleteReleaseAsset(Object.assign(Object.assign({}, (0, getRepo_1.default)()), { asset_id: duplicate_asset.id }));
+            }
+            else {
+                core.setFailed(`An asset called ${asset_name} already exists.`);
+                return duplicate_asset.browser_download_url;
+            }
+        }
+        else {
+            core.debug(`No pre-existing asset called ${asset_name} found in release ${tag}. All good.`);
+        }
+        core.debug(`Uploading ${file} to ${asset_name} in release ${tag}.`);
+        const uploaded_asset = yield octokit.rest.repos.uploadReleaseAsset(Object.assign(Object.assign({}, (0, getRepo_1.default)()), { name: asset_name, data: file_bytes, release_id: release.data.id, headers: {
+                'content-type': 'binary/octet-stream',
+                'content-length': file_size
+            } }));
+        return uploaded_asset.data.browser_download_url;
+    });
+}
+exports["default"] = uploadToRelease;
 
 
 /***/ }),

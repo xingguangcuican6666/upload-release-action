@@ -41,6 +41,10 @@ on:
     tags:
       - '*'
 
+concurrency:
+  group: ${{ github.action_path }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Publish binaries
@@ -70,6 +74,10 @@ on:
   push:
     tags:
       - '*'
+
+concurrency:
+  group: ${{ github.action_path }}
+  cancel-in-progress: true
 
 jobs:
   publish:
@@ -110,6 +118,10 @@ on:
     tags:
       - '*'
 
+concurrency:
+  group: ${{ github.action_path }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Publish binaries
@@ -137,6 +149,10 @@ on:
   push:
     tags:
       - '*'
+
+concurrency:
+  group: ${{ github.action_path }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -174,6 +190,10 @@ on:
   push:
     tags:
       - '*'
+
+concurrency:
+  group: ${{ github.action_path }}
+  cancel-in-progress: true
 
 jobs:
 

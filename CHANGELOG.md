@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.3] - 2022-04-24
+- Update all npm dependencies
+- Use yarn as a package manager
+- Fix lot's of legacy code that ceases to work with newer deps
+
 ## [2.2.1] - 2020-12-16
 - Added support for the GitHub pagination API for repositories with many releases [#36](https://github.com/svenstaro/upload-release-action/pull/36) (thanks @djpohly)
 

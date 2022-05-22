@@ -1,4 +1,7 @@
-node_modules
-run.sh
-__tests__/runner/*
-lib/**/*
+/node_modules
+/__tests__/runner/*
+/lib
+
+# Vim
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]

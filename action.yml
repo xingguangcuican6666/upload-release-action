@@ -20,6 +20,8 @@ inputs:
     description: 'Overwrite the release in case it already exists.'
   file_glob:
     description: 'If true the file can be a glob pattern, asset_name is ignored if this is true.'
+  skip_if_no_glob_match:
+    description: 'If set to true, upload-release-action will skip if file_glob does not match any files. Ignored if file_glob is not set'
   prerelease:
     description: 'Mark the release as a pre-release. Defaults to "false".'
   release_name:
@@ -29,8 +31,8 @@ inputs:
   repo_name:
     description: 'Specify the name of the GitHub repository in which the GitHub release will be created, edited, and deleted. If the repository is other than the current, it is required to create a personal access token with `repo`, `user`, `admin:repo_hook` scopes to the foreign repository and add it as a secret. Defaults to the current repository'
 outputs:
-  browser_download_url:
-    description: 'The publicly available URL of the asset.'
+  browser_download_urls:
+    description: 'Array of publicly available URLs of the assets.'
 runs:
   using: 'node16'
   main: 'dist/index.js'

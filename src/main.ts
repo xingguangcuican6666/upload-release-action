@@ -33,6 +33,7 @@ async function run(): Promise<void> {
     if (file_glob) {
       const files = glob.sync(file_name);
       if (files.length > 0) {
+        const asset_download_urls: string[] = [];
         for (const file of files) {
           const asset_name = path.basename(file);
           const asset_download_url = await uploadToRelease(
@@ -43,10 +44,19 @@ async function run(): Promise<void> {
             overwrite,
             octokit
           );
-          core.setOutput('browser_download_url', asset_download_url);
+          if (typeof asset_download_url != 'undefined') {
+            asset_download_urls.push(asset_download_url);
+          }
         }
+        core.setOutput('browser_download_urls', asset_download_urls);
       } else {
-        core.setFailed('No files matching the glob pattern found.');
+        const skip_if_no_glob_match =
+          core.getInput('skip_if_no_glob_match') == 'true' ? true : false;
+        if (skip_if_no_glob_match) {
+          core.warning('No files matching the glob pattern found.');
+        } else {
+          core.setFailed('No files matching the glob pattern found.');
+        }
       }
     } else {
       const asset_name =
@@ -61,7 +71,7 @@ async function run(): Promise<void> {
         overwrite,
         octokit
       );
-      core.setOutput('browser_download_url', asset_download_url);
+      core.setOutput('browser_download_urls', [asset_download_url]);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

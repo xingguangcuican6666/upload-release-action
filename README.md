@@ -214,7 +214,7 @@ jobs:
           r="${r//'%'/'%25'}"                               # Multiline escape sequences for %
           r="${r//$'\n'/'%0A'}"                             # Multiline escape sequences for '\n'
           r="${r//$'\r'/'%0D'}"                             # Multiline escape sequences for '\r'
-          echo "::set-output name=RELEASE_BODY::$r"         # <--- Set environment variable
+          echo "name=RELEASE_BODY$r" >> $GITHUB_OUTPUT      # <--- Set environment variable
 
       - name: Upload Binaries to Release
         uses: termux/upload-release-action@v3.0.3

@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.0] - 2022-12-28
+- Use Node.js 18
+- Added `skip_of_no_glob_match` input paramater. Setting this to true will supress error when no files are to be uploaded when no file matches the glob.
+- `browser_download_url` has now been replaced with `browser_download_urls` which is now an array of uploaded files.
+- Dependency updates (as usual)
+
 ## [3.0.3] - 2022-04-24
 - Update all npm dependencies
 - Use yarn as a package manager

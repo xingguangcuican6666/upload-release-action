@@ -217,7 +217,7 @@ jobs:
           echo "RELEASE_BODY=$r" >> $GITHUB_OUTPUT          # <--- Set environment variable
 
       - name: Upload Binaries to Release
-        uses: termux/upload-release-action@v3.0.3
+        uses: termux/upload-release-action@v4.0.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}

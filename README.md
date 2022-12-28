@@ -55,7 +55,7 @@ jobs:
     - name: Build
       run: cargo build --release
     - name: Upload binaries to release
-      uses: termux/upload-release-action@v3.0.3
+      uses: termux/upload-release-action@v4.0.1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/mything
@@ -101,7 +101,7 @@ jobs:
     - name: Build
       run: cargo build --release --locked
     - name: Upload binaries to release
-      uses: termux/upload-release-action@v3.0.3
+      uses: termux/upload-release-action@v4.0.1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/${{ matrix.artifact_name }}
@@ -131,7 +131,7 @@ jobs:
     - name: Build
       run: cargo build --release
     - name: Upload binaries to release
-      uses: termux/upload-release-action@v3.0.3
+      uses: termux/upload-release-action@v4.0.1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/release/my*
@@ -164,7 +164,7 @@ jobs:
     - name: Build
       run: cargo build --release
     - name: Upload binaries to release
-      uses: termux/upload-release-action@v3.0.3
+      uses: termux/upload-release-action@v4.0.1
       with:
         repo_name: owner/repository-name
         # A personal access token for the GitHub repository in which the release will be created and edited.

@@ -37,7 +37,8 @@ async function run(): Promise<void> {
       octokit.rest.repos.listReleaseAssets,
       {
         ...getRepo(),
-        release_id: release.data.id
+        release_id: release.data.id,
+        per_page: 100
       }
     );
 

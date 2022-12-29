@@ -189,7 +189,7 @@ function run() {
             const octokit = github.getOctokit(token);
             const release = yield (0, getReleaseByTag_1.default)(tag, prerelease, release_name, body, octokit);
             // For checking duplicates
-            const assets = yield octokit.paginate(octokit.rest.repos.listReleaseAssets, Object.assign(Object.assign({}, (0, getRepo_1.default)()), { release_id: release.data.id }));
+            const assets = yield octokit.paginate(octokit.rest.repos.listReleaseAssets, Object.assign(Object.assign({}, (0, getRepo_1.default)()), { release_id: release.data.id, per_page: 100 }));
             if (file_glob) {
                 const files = glob.sync(file_name);
                 if (files.length > 0) {

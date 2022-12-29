@@ -170,6 +170,7 @@ const path = __importStar(__nccwpck_require__(1017));
 const glob = __importStar(__nccwpck_require__(1957));
 const uploadToRelease_1 = __importDefault(__nccwpck_require__(2126));
 const getReleaseByTag_1 = __importDefault(__nccwpck_require__(2749));
+const getRepo_1 = __importDefault(__nccwpck_require__(9859));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -187,13 +188,15 @@ function run() {
             const body = core.getInput('body');
             const octokit = github.getOctokit(token);
             const release = yield (0, getReleaseByTag_1.default)(tag, prerelease, release_name, body, octokit);
+            // For checking duplicates
+            const assets = yield octokit.paginate(octokit.rest.repos.listReleaseAssets, Object.assign(Object.assign({}, (0, getRepo_1.default)()), { release_id: release.data.id }));
             if (file_glob) {
                 const files = glob.sync(file_name);
                 if (files.length > 0) {
                     const asset_download_urls = [];
                     for (const file of files) {
                         const asset_name = path.basename(file);
-                        const asset_download_url = yield (0, uploadToRelease_1.default)(release, file, asset_name, tag, overwrite, octokit);
+                        const asset_download_url = yield (0, uploadToRelease_1.default)(release, file, asset_name, tag, overwrite, octokit, assets);
                         if (typeof asset_download_url != 'undefined') {
                             asset_download_urls.push(asset_download_url);
                         }
@@ -214,7 +217,7 @@ function run() {
                 const asset_name = core.getInput('asset_name') !== ''
                     ? core.getInput('asset_name').replace(/\$tag/g, tag)
                     : path.basename(file_name);
-                const asset_download_url = yield (0, uploadToRelease_1.default)(release, file_name, asset_name, tag, overwrite, octokit);
+                const asset_download_url = yield (0, uploadToRelease_1.default)(release, file_name, asset_name, tag, overwrite, octokit, assets);
                 core.setOutput('browser_download_urls', [asset_download_url]);
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -273,7 +276,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const getRepo_1 = __importDefault(__nccwpck_require__(9859));
 const core = __importStar(__nccwpck_require__(2186));
 const fs_1 = __nccwpck_require__(7147);
-function uploadToRelease(release, file, asset_name, tag, overwrite, octokit) {
+function uploadToRelease(release, file, asset_name, tag, overwrite, octokit, assets) {
     return __awaiter(this, void 0, void 0, function* () {
         const stat = (0, fs_1.statSync)(file);
         if (!stat.isFile()) {
@@ -282,8 +285,7 @@ function uploadToRelease(release, file, asset_name, tag, overwrite, octokit) {
         }
         const file_size = stat.size;
         const file_bytes = (0, fs_1.readFileSync)(file);
-        // Check for duplicates.
-        const assets = yield octokit.paginate(octokit.rest.repos.listReleaseAssets, Object.assign(Object.assign({}, (0, getRepo_1.default)()), { release_id: release.data.id }));
+        // Check for duplicates
         const duplicate_asset = assets.find(a => a.name === asset_name);
         if (duplicate_asset !== undefined) {
             if (overwrite) {

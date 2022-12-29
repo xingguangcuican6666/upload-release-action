@@ -4,6 +4,8 @@ import * as path from 'path';
 import * as glob from 'glob';
 import uploadToRelease from './uploadToRelease';
 import getReleaseByTag from './getReleaseByTag';
+import getRepo from './getRepo';
+import {RepoAssetsResp} from './types';
 
 async function run(): Promise<void> {
   try {
@@ -30,6 +32,15 @@ async function run(): Promise<void> {
       octokit
     );
 
+    // For checking duplicates
+    const assets: RepoAssetsResp = await octokit.paginate(
+      octokit.rest.repos.listReleaseAssets,
+      {
+        ...getRepo(),
+        release_id: release.data.id
+      }
+    );
+
     if (file_glob) {
       const files = glob.sync(file_name);
       if (files.length > 0) {
@@ -42,7 +53,8 @@ async function run(): Promise<void> {
             asset_name,
             tag,
             overwrite,
-            octokit
+            octokit,
+            assets
           );
           if (typeof asset_download_url != 'undefined') {
             asset_download_urls.push(asset_download_url);
@@ -69,7 +81,8 @@ async function run(): Promise<void> {
         asset_name,
         tag,
         overwrite,
-        octokit
+        octokit,
+        assets
       );
       core.setOutput('browser_download_urls', [asset_download_url]);
     }

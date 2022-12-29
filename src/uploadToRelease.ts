@@ -5,8 +5,8 @@ import {statSync, readFileSync} from 'fs';
 import {
   ReleaseByTagResp,
   CreateReleaseResp,
-  RepoAssetsResp,
-  UploadAssetResp
+  UploadAssetResp,
+  RepoAssetsResp
 } from './types';
 
 export default async function uploadToRelease(
@@ -15,7 +15,8 @@ export default async function uploadToRelease(
   asset_name: string,
   tag: string,
   overwrite: boolean,
-  octokit: InstanceType<typeof GitHub>
+  octokit: InstanceType<typeof GitHub>,
+  assets: RepoAssetsResp
 ): Promise<undefined | string> {
   const stat = statSync(file);
   if (!stat.isFile()) {
@@ -25,14 +26,7 @@ export default async function uploadToRelease(
   const file_size = stat.size;
   const file_bytes = readFileSync(file);
 
-  // Check for duplicates.
-  const assets: RepoAssetsResp = await octokit.paginate(
-    octokit.rest.repos.listReleaseAssets,
-    {
-      ...getRepo(),
-      release_id: release.data.id
-    }
-  );
+  // Check for duplicates
   const duplicate_asset = assets.find(a => a.name === asset_name);
   if (duplicate_asset !== undefined) {
     if (overwrite) {

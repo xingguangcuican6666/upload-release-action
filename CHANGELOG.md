@@ -1,7 +1,10 @@
 # Changelog
 
+## [4.0.2] - 2022-12-29
+- Prevent API overuse [#5](https://github.com/termux/upload-release-action/issues/5)
+
 ## [4.0.1] - 2022-12-28
-- Target Node.js v18
+- Target Node.js v18 (EVENTUALLY REVERTED as Node.js v18 is not available for actions usage)
 
 ## [4.0.0] - 2022-12-28
 - Added `skip_of_no_glob_match` input paramater. Setting this to true will supress error when no files are to be uploaded when no file matches the glob.

@@ -18,9 +18,10 @@ async function run(): Promise<void> {
       .replace('refs/tags/', '')
       .replace('refs/heads/', '');
 
-    const file_glob = core.getBooleanInput('file_glob');
-    const overwrite = core.getBooleanInput('overwrite');
-    const prerelease = core.getBooleanInput('prerelease');
+    // NOTE: can't use core.getBooleanInput due to https://github.com/actions/toolkit/issues/844
+    const file_glob = core.getInput('file_glob') === 'true' ? true : false;
+    const overwrite = core.getInput('overwrite') === 'true' ? true : false;
+    const prerelease = core.getInput('prerelease') === 'true' ? true : false;
     const release_name = core.getInput('release_name');
     const body = core.getInput('body');
     const checksums_algos = core.getInput('checksums').split(',');

@@ -64,6 +64,7 @@ jobs:
         tag: ${{ github.ref }}
         overwrite: true
         body: "This is my release text"
+        checksums: sha256,sha512,md5
 ```
 
 Complex example with more operating systems:

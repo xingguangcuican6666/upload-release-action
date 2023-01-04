@@ -208,7 +208,7 @@ function run() {
             const prerelease = core.getBooleanInput('prerelease');
             const release_name = core.getInput('release_name');
             const body = core.getInput('body');
-            const checksums_algos = core.getMultilineInput('checksums');
+            const checksums_algos = core.getInput('checksums').split(',');
             const checksums = {};
             // Make sure all checksums_algos are available
             const availableHashes = (0, crypto_1.getHashes)();

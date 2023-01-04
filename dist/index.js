@@ -1,6 +1,27 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 9125:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const node_crypto_1 = __nccwpck_require__(6005);
+function calculateChecksum(fileBytes, algorithms) {
+    const checksum = {};
+    for (const algorithm of algorithms) {
+        const hash = (0, node_crypto_1.createHash)(algorithm);
+        hash.update(fileBytes);
+        checksum[algorithm] = hash.digest('hex');
+    }
+    return checksum;
+}
+exports["default"] = calculateChecksum;
+
+
+/***/ }),
+
 /***/ 2749:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -171,6 +192,7 @@ const glob = __importStar(__nccwpck_require__(1957));
 const uploadToRelease_1 = __importDefault(__nccwpck_require__(2126));
 const getReleaseByTag_1 = __importDefault(__nccwpck_require__(2749));
 const getRepo_1 = __importDefault(__nccwpck_require__(9859));
+const crypto_1 = __nccwpck_require__(6113);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -181,11 +203,20 @@ function run() {
                 .getInput('tag', { required: true })
                 .replace('refs/tags/', '')
                 .replace('refs/heads/', '');
-            const file_glob = core.getInput('file_glob') == 'true' ? true : false;
-            const overwrite = core.getInput('overwrite') == 'true' ? true : false;
-            const prerelease = core.getInput('prerelease') == 'true' ? true : false;
+            const file_glob = core.getBooleanInput('file_glob');
+            const overwrite = core.getBooleanInput('overwrite');
+            const prerelease = core.getBooleanInput('prerelease');
             const release_name = core.getInput('release_name');
             const body = core.getInput('body');
+            const checksums_algos = core.getMultilineInput('checksums');
+            const checksums = {};
+            // Make sure all checksums_algos are available
+            const availableHashes = (0, crypto_1.getHashes)();
+            for (const algo of checksums_algos) {
+                if (!availableHashes.includes(algo)) {
+                    throw new Error('Unsupported cryptographic algorithm');
+                }
+            }
             const octokit = github.getOctokit(token);
             const release = yield (0, getReleaseByTag_1.default)(tag, prerelease, release_name, body, octokit);
             // For checking duplicates
@@ -196,7 +227,7 @@ function run() {
                     const asset_download_urls = [];
                     for (const file of files) {
                         const asset_name = path.basename(file);
-                        const asset_download_url = yield (0, uploadToRelease_1.default)(release, file, asset_name, tag, overwrite, octokit, assets);
+                        const asset_download_url = yield (0, uploadToRelease_1.default)(release, file, asset_name, tag, overwrite, octokit, assets, checksums_algos, checksums);
                         if (typeof asset_download_url != 'undefined') {
                             asset_download_urls.push(asset_download_url);
                         }
@@ -217,7 +248,7 @@ function run() {
                 const asset_name = core.getInput('asset_name') !== ''
                     ? core.getInput('asset_name').replace(/\$tag/g, tag)
                     : path.basename(file_name);
-                const asset_download_url = yield (0, uploadToRelease_1.default)(release, file_name, asset_name, tag, overwrite, octokit, assets);
+                const asset_download_url = yield (0, uploadToRelease_1.default)(release, file_name, asset_name, tag, overwrite, octokit, assets, checksums_algos, checksums);
                 core.setOutput('browser_download_urls', [asset_download_url]);
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -273,10 +304,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.uploadFile = void 0;
 const getRepo_1 = __importDefault(__nccwpck_require__(9859));
 const core = __importStar(__nccwpck_require__(2186));
 const fs_1 = __nccwpck_require__(7147);
-function uploadToRelease(release, file, asset_name, tag, overwrite, octokit, assets) {
+const calculateChecksum_1 = __importDefault(__nccwpck_require__(9125));
+function uploadFile(release, file, file_bytes, file_size, asset_name, tag, octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.debug(`Uploading ${file} to ${asset_name} in release ${tag}.`);
+        const uploaded_asset = yield octokit.rest.repos.uploadReleaseAsset(Object.assign(Object.assign({}, (0, getRepo_1.default)()), { name: asset_name, data: file_bytes, release_id: release.data.id, headers: {
+                'content-type': 'binary/octet-stream',
+                'content-length': file_size
+            } }));
+        return uploaded_asset.data.browser_download_url;
+    });
+}
+exports.uploadFile = uploadFile;
+function uploadToRelease(release, file, asset_name, tag, overwrite, octokit, assets, checksum_algos, checksums) {
     return __awaiter(this, void 0, void 0, function* () {
         const stat = (0, fs_1.statSync)(file);
         if (!stat.isFile()) {
@@ -285,6 +329,8 @@ function uploadToRelease(release, file, asset_name, tag, overwrite, octokit, ass
         }
         const file_size = stat.size;
         const file_bytes = (0, fs_1.readFileSync)(file);
+        const checksum = (0, calculateChecksum_1.default)(file_bytes, checksum_algos);
+        checksums[file] = checksum;
         // Check for duplicates
         const duplicate_asset = assets.find(a => a.name === asset_name);
         if (duplicate_asset !== undefined) {
@@ -300,12 +346,7 @@ function uploadToRelease(release, file, asset_name, tag, overwrite, octokit, ass
         else {
             core.debug(`No pre-existing asset called ${asset_name} found in release ${tag}. All good.`);
         }
-        core.debug(`Uploading ${file} to ${asset_name} in release ${tag}.`);
-        const uploaded_asset = yield octokit.rest.repos.uploadReleaseAsset(Object.assign(Object.assign({}, (0, getRepo_1.default)()), { name: asset_name, data: file_bytes, release_id: release.data.id, headers: {
-                'content-type': 'binary/octet-stream',
-                'content-length': file_size
-            } }));
-        return uploaded_asset.data.browser_download_url;
+        return uploadFile(release, file, file_bytes, file_size, asset_name, tag, octokit);
     });
 }
 exports["default"] = uploadToRelease;
@@ -13036,6 +13077,14 @@ module.exports = require("https");
 
 "use strict";
 module.exports = require("net");
+
+/***/ }),
+
+/***/ 6005:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:crypto");
 
 /***/ }),
 

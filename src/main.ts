@@ -5,7 +5,8 @@ import * as glob from 'glob';
 import uploadToRelease from './uploadToRelease';
 import getReleaseByTag from './getReleaseByTag';
 import getRepo from './getRepo';
-import {RepoAssetsResp} from './types';
+import {Checksums, RepoAssetsResp} from './types';
+import {getHashes} from 'crypto';
 
 async function run(): Promise<void> {
   try {
@@ -17,11 +18,21 @@ async function run(): Promise<void> {
       .replace('refs/tags/', '')
       .replace('refs/heads/', '');
 
-    const file_glob = core.getInput('file_glob') == 'true' ? true : false;
-    const overwrite = core.getInput('overwrite') == 'true' ? true : false;
-    const prerelease = core.getInput('prerelease') == 'true' ? true : false;
+    const file_glob = core.getBooleanInput('file_glob');
+    const overwrite = core.getBooleanInput('overwrite');
+    const prerelease = core.getBooleanInput('prerelease');
     const release_name = core.getInput('release_name');
     const body = core.getInput('body');
+    const checksums_algos = core.getMultilineInput('checksums');
+    const checksums: Checksums = {};
+
+    // Make sure all checksums_algos are available
+    const availableHashes = getHashes();
+    for (const algo of checksums_algos) {
+      if (!availableHashes.includes(algo)) {
+        throw new Error('Unsupported cryptographic algorithm');
+      }
+    }
 
     const octokit = github.getOctokit(token);
     const release = await getReleaseByTag(
@@ -55,7 +66,9 @@ async function run(): Promise<void> {
             tag,
             overwrite,
             octokit,
-            assets
+            assets,
+            checksums_algos,
+            checksums
           );
           if (typeof asset_download_url != 'undefined') {
             asset_download_urls.push(asset_download_url);
@@ -83,10 +96,13 @@ async function run(): Promise<void> {
         tag,
         overwrite,
         octokit,
-        assets
+        assets,
+        checksums_algos,
+        checksums
       );
       core.setOutput('browser_download_urls', [asset_download_url]);
     }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     core.setFailed(error.message);

@@ -21,10 +21,11 @@ Optional Arguments
 - `release_name`: Explicitly set a release name. (Defaults: implicitly same as `tag` via GitHub API).
 - `body`: Content of the release text (Default: `""`).
 - `repo_name`: Specify the name of the GitHub repository in which the GitHub release will be created, edited, and deleted. If the repository is other than the current, it is required to create a personal access token with `repo`, `user`, `admin:repo_hook` scopes to the foreign repository and add it as a secret. (Default: current repository).
+- `checksums`: List of cryptographic checksums to calculate.
 
 ## Output variables
 
-- `browser_download_url`: The publicly available URL of the asset.
+- `browser_download_urls`: Array of publicly available URLs of the assets.
 
 ## Usage
 

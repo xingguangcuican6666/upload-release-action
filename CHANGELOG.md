@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.1.0] - 2023-01-DD
+- Add support for generating checksums automatically
+
 ## [4.0.2] - 2022-12-29
 - Prevent API overuse [#5](https://github.com/termux/upload-release-action/issues/5)
 

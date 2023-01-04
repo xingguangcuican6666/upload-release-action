@@ -6,8 +6,34 @@ import {
   ReleaseByTagResp,
   CreateReleaseResp,
   UploadAssetResp,
-  RepoAssetsResp
+  RepoAssetsResp,
+  Checksums
 } from './types';
+import calculateChecksum from './calculateChecksum';
+
+export async function uploadFile(
+  release: ReleaseByTagResp | CreateReleaseResp,
+  file: string,
+  file_bytes: Buffer,
+  file_size: number,
+  asset_name: string,
+  tag: string,
+  octokit: InstanceType<typeof GitHub>
+): Promise<undefined | string> {
+  core.debug(`Uploading ${file} to ${asset_name} in release ${tag}.`);
+  const uploaded_asset: UploadAssetResp =
+    await octokit.rest.repos.uploadReleaseAsset({
+      ...getRepo(),
+      name: asset_name,
+      data: file_bytes as unknown as string,
+      release_id: release.data.id,
+      headers: {
+        'content-type': 'binary/octet-stream',
+        'content-length': file_size
+      }
+    });
+  return uploaded_asset.data.browser_download_url;
+}
 
 export default async function uploadToRelease(
   release: ReleaseByTagResp | CreateReleaseResp,
@@ -16,7 +42,9 @@ export default async function uploadToRelease(
   tag: string,
   overwrite: boolean,
   octokit: InstanceType<typeof GitHub>,
-  assets: RepoAssetsResp
+  assets: RepoAssetsResp,
+  checksum_algos: string[],
+  checksums: Checksums
 ): Promise<undefined | string> {
   const stat = statSync(file);
   if (!stat.isFile()) {
@@ -25,6 +53,8 @@ export default async function uploadToRelease(
   }
   const file_size = stat.size;
   const file_bytes = readFileSync(file);
+  const checksum = calculateChecksum(file_bytes, checksum_algos);
+  checksums[file] = checksum;
 
   // Check for duplicates
   const duplicate_asset = assets.find(a => a.name === asset_name);
@@ -47,17 +77,13 @@ export default async function uploadToRelease(
     );
   }
 
-  core.debug(`Uploading ${file} to ${asset_name} in release ${tag}.`);
-  const uploaded_asset: UploadAssetResp =
-    await octokit.rest.repos.uploadReleaseAsset({
-      ...getRepo(),
-      name: asset_name,
-      data: file_bytes as unknown as string,
-      release_id: release.data.id,
-      headers: {
-        'content-type': 'binary/octet-stream',
-        'content-length': file_size
-      }
-    });
-  return uploaded_asset.data.browser_download_url;
+  return uploadFile(
+    release,
+    file,
+    file_bytes,
+    file_size,
+    asset_name,
+    tag,
+    octokit
+  );
 }

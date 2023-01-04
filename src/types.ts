@@ -8,3 +8,11 @@ export type CreateReleaseResp =
   Endpoints['POST /repos/{owner}/{repo}/releases']['response'];
 export type UploadAssetResp =
   Endpoints['POST {origin}/repos/{owner}/{repo}/releases/{release_id}/assets{?name,label}']['response'];
+
+export interface Checksum {
+  [key: string]: string;
+}
+
+export interface Checksums {
+  [fileName: string]: Checksum;
+}

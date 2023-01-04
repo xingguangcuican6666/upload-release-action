@@ -7,6 +7,7 @@ import getReleaseByTag from './getReleaseByTag';
 import getRepo from './getRepo';
 import {Checksums, RepoAssetsResp} from './types';
 import {getHashes} from 'crypto';
+import uploadChecksums from './uploadChecksums';
 
 async function run(): Promise<void> {
   try {
@@ -103,6 +104,7 @@ async function run(): Promise<void> {
       );
       core.setOutput('browser_download_urls', [asset_download_url]);
     }
+    uploadChecksums(checksums, checksums_algos, release, tag, octokit);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

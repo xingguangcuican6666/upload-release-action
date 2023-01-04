@@ -193,6 +193,7 @@ const uploadToRelease_1 = __importDefault(__nccwpck_require__(2126));
 const getReleaseByTag_1 = __importDefault(__nccwpck_require__(2749));
 const getRepo_1 = __importDefault(__nccwpck_require__(9859));
 const crypto_1 = __nccwpck_require__(6113);
+const uploadChecksums_1 = __importDefault(__nccwpck_require__(7368));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -252,6 +253,7 @@ function run() {
                 const asset_download_url = yield (0, uploadToRelease_1.default)(release, file_name, asset_name, tag, overwrite, octokit, assets, checksums_algos, checksums);
                 core.setOutput('browser_download_urls', [asset_download_url]);
             }
+            (0, uploadChecksums_1.default)(checksums, checksums_algos, release, tag, octokit);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         }
         catch (error) {
@@ -260,6 +262,28 @@ function run() {
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 7368:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const uploadToRelease_1 = __nccwpck_require__(2126);
+function uploadChecksums(checksums, algos, release, tag, octokit) {
+    for (const algo of algos) {
+        let checksumsFileContent = '';
+        const checksumsFileName = 'CHECKSUMS-' + algo + '.txt';
+        for (const file of Object.keys(checksums)) {
+            checksumsFileContent += `${file}\t${checksums[file][algo]}\n`;
+        }
+        (0, uploadToRelease_1.uploadFile)(release, checksumsFileName, Buffer.from(checksumsFileContent), checksumsFileContent.length, checksumsFileName, tag, octokit);
+    }
+}
+exports["default"] = uploadChecksums;
 
 
 /***/ }),
